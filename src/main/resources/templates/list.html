@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <style>
+    table{
+      background-color: antiquewhite;
+    }
+    th{
+      background-color: aqua;
+    }
+    td{
+      background-color: blanchedalmond;
+    }
+    button{
+      background-color: #c6ea25;
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+  <script>
+    function load(){
+      $.ajax({
+        headers:{
+          'Accept':'application/json',
+          'Content-Type':'application/json'
+        },
+        type:"GET",
+        url:"Http://localhost:8080/api/user",
+        success:function (list){
+          console.log(list)
+          let str="<button onclick='showCreate()'>Add</button><table border='1px'>"+
+          "<tr><th>Id</th><th>Name</th><th>Address</th><th>Edit</th><th>Delete</th></tr>"
+          for (let i=0;i<list.length;i++){
+            str+="<tr><td><a href='#' onclick='view("+list[i].id+")'>"+list[i].id+"</a></td>"+
+                    "<td>"+list[i].name+"</td>"+
+                    "<td>"+list[i].address.name+"</td>"+
+                    "<td><button onclick='showEdit("+list[i].id+")'>Edit</button></td>"+
+                    "<td><button onclick='deleteUser("+list[i].id+")'>delete</button></td>"+
+                    "</tr>"
+          }
+          str+="</table>"
+document.getElementById("load").innerHTML=str;
+
+        }
+      })
+    }
+    function showCreate(){
+      document.getElementById("view").innerHTML="<input type='text' id='name' placeholder='Name'>"+
+              "<select id='select'></select>"+
+              "<button onclick='saveCreate()'>Save</button>"
+      $.ajax({
+        headers: {
+          'Accpect':'application/json',
+          'Content-Type':'application/json'
+        },
+        type:'GET',
+        url: 'Http://localhost:8080/api/address',
+        success:function (data){
+          let str=""
+          for(let i=0;i<data.length;i++){
+            str+="<option value='"+data[i].id+"'>"+data[i].name+"</option>"
+          }
+          document.getElementById("select").innerHTML=str;
+        }
+      })
+    }
+   function saveCreate(){
+      let name=document.getElementById("name").value
+      let select=document.getElementById("select").value
+     let user={
+        'name':name,
+       'address':{
+          'id':select
+       }
+     }
+     $.ajax({
+       headers:{
+         'Accpect':'application/json',
+         'Content-Type':'application/json',
+       },
+       type:'POST',
+       url:'Http://localhost:8080/api/user',
+       data:JSON.stringify(user),
+       success:function (){
+
+        load()
+       },
+       error:function (error){}
+     });
+   }
+   function showEdit(id)
+  </script>
+</head>
+<body onload="load()">
+<h1>User list</h1>
+
+  <div class="row" >
+    <div id="load" class="col-8"></div>
+    <div id="view" class="col-4"><h1>hello</h1></div>
+  </div>
+<div id="add"></div>
+</body>
+</html>
